@@ -1,16 +1,28 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
-|
-*/
+$app->get('set-webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
+    $url = '/webhook:' . env('TELEGRAM_BOT_TOKEN');
 
-$app->get('/', function () use ($app) {
-    return $app->version();
+    $telegram = $app->make(\Telegram\Bot\Api::class, [env('TELEGRAM_BOT_TOKEN')]);
+
+    $rep = $telegram->setWebhook(compact('url'));
+
+    return 'ok';
+});
+
+$app->post('/webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
+    $telegram = $app->make(\Telegram\Bot\Api::class, [env('TELEGRAM_BOT_TOKEN')]);
+
+    if ($app['request']->has('message')) {
+        $message = $app['request']->input('message');
+
+        $chatId = $message['chat']['id'];
+
+        $telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => 'ok'
+        ]);
+    }
+
+    return;
 });
