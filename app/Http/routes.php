@@ -1,7 +1,7 @@
 <?php
 
 $app->get('set-webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
-    $url = '/webhook:' . env('TELEGRAM_BOT_TOKEN');
+    $url = route('webhook');
 
     $telegram = $app->make(\Telegram\Bot\Api::class, [env('TELEGRAM_BOT_TOKEN')]);
 
@@ -10,7 +10,7 @@ $app->get('set-webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
     return 'ok';
 });
 
-$app->post('/webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
+$app->post('/webhook:' . env('TELEGRAM_BOT_TOKEN'), ['as' => 'webhook', function () use ($app) {
     $telegram = $app->make(\Telegram\Bot\Api::class, [env('TELEGRAM_BOT_TOKEN')]);
 
     if ($app['request']->has('message')) {
@@ -25,4 +25,4 @@ $app->post('/webhook:' . env('TELEGRAM_BOT_TOKEN'), function () use ($app) {
     }
 
     return;
-});
+}]);
